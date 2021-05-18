@@ -12,40 +12,56 @@ class App extends React.Component {
   }
 
   componentDidMount(){
-    myPeer.on('open', userId=>{
-      socket.emit('join-room', roomId, userId)
+    const peers = {};
+    var myVideo = document.createElement('video');
+    myVideo.muted= true;
+    myVideo.id = 'myvid'
+
+    navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: false,
     })
+    .then(stream =>{
+      this.addCallerVideo(myVideo, stream)
+
+      myPeer.on('call', call => {
+        call.answer(stream)
+        var video = document.createElement('video');
+        call.on('stream', callerVideoStream =>{
+          this.addCallerVideo(video, callerVideoStream)
+        })
+      })
+
 
     socket.on('user-connected', userId => {
       this.connectToNewUser(userId, stream)
     })
+  })
 
-    navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true,
+  socket.on('user-disconnect', userId=>{
+    console.log('disconected user'+ userId)
+  })
+
+    myPeer.on('open', userId=>{
+        socket.emit('join-room', roomId, userId)
     })
-    .then(stream =>{
-      this.addCallerVideo(stream, undefined)
-    })
+
 
   }
 
-  addCallerVideo(stream, userId) {
-    let callerVideo = document.createElement('video');
-    callerVideo.id= userId;
-    callerVideo.muted = true;
-    callerVideo.srcObject = stream;
-    callerVideo.addEventListener('loadedmetadata',()=> {callerVideo.play()})
-    document.getElementById('callGrid').append(callerVideo)
+  addCallerVideo(video, stream) {
+    video.srcObject = stream;
+    video.addEventListener('loadedmetadata',()=> {video.play()})
+    document.getElementById('callGrid').append(video)
   }
 
   connectToNewUser(userId, stream) {
     const call = myPeer.call(userId, stream);
+    var video = document.createElement('video');
     call.on('stream', newUserVideoStream =>{
-      this.addCallerVideo(newUserVideoStream, userId)
+      this.addCallerVideo(video, newUserVideoStream)
     })
     call.on('close', ()=> {
-      let video= document.getElementById(userId)
       video.remove();
     })
   }

@@ -20,8 +20,13 @@ io.on('connection', socket => {
   socket.on('join-room', (roomId, userId) => {
     socket.join(roomId)
     socket.broadcast.emit('user-connected', userId)
+    socket.on('disconnect', ()=> {
+      socket.broadcast.emit('user-disconnect', userId)
+    })
   } )
 })
+
+
 
 
 server.listen(3000)
