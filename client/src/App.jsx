@@ -8,11 +8,11 @@ const myPeer = new Peer(undefined, {host: '/', port: '3001'})
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {}
+    this.state = {
+    }
   }
 
   componentDidMount(){
-    const peers = {};
     var myVideo = document.createElement('video');
     myVideo.muted= true;
     myVideo.id = 'myvid'
@@ -38,8 +38,10 @@ class App extends React.Component {
     })
   })
 
-  socket.on('user-disconnect', userId=>{
-    console.log('disconected user'+ userId)
+  socket.on('user-disconnect', userId =>{
+    if (this.state[userId]){
+      this.state[userId].close();
+    }
   })
 
     myPeer.on('open', userId=>{
@@ -63,7 +65,13 @@ class App extends React.Component {
     })
     call.on('close', ()=> {
       video.remove();
+      var obj = {};
+      obj[userId]= undefined;
+      this.setState(obj);
     })
+    var obj = {}
+    obj[userId]= call
+    this.setState(obj);
   }
 
   render() {
