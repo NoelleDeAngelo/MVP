@@ -23,7 +23,17 @@ io.on('connection', socket => {
     socket.on('disconnect', ()=> {
       socket.to(roomId).emit('user-disconnect', userId)
     })
-  } )
+    socket.on('player-ready', ()=>{
+     socket.emit('ready')
+    })
+    socket.on('play-video', ()=>{
+      socket.to(roomId).emit('play-video')
+    })
+    socket.on('pause-video', ()=>{
+      socket.to(roomId).emit('pause-video')
+    })
+
+  })
 })
 
 

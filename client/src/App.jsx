@@ -9,6 +9,8 @@ class App extends React.Component {
     super(props);
     this.startVideo= this.startVideo.bind(this)
     this.addYT = this.addYT.bind(this)
+    this.onReady = this.onReady.bind(this)
+    this.onPlayerStateChange = this.onPlayerStateChange.bind(this)
     this.state = {
     }
   }
@@ -41,11 +43,19 @@ class App extends React.Component {
     })
   })
 
-  socket.on('user-disconnect', userId =>{
-    if (this.state[userId]){
-      this.state[userId].close();
-    }
-  })
+    socket.on('user-disconnect', userId =>{
+      if (this.state[userId]){
+        this.state[userId].close();
+      }
+    })
+
+    socket.on('ready', () =>{
+      console.log('ready')
+    })
+
+    socket.on('play-video', () =>{
+      this.startVideo()
+    })
 
     myPeer.on('open', userId=>{
         socket.emit('join-room', roomId, userId)
@@ -67,9 +77,23 @@ class App extends React.Component {
         'orgin': location.origin
       },
       events: {
-        'onReady': this.startVideo,
+        'onReady': this.onReady,
+        'onStateChange': this.onPlayerStateChange
       }
     });
+  }
+
+  onReady(){
+    socket.emit('player-ready')
+  }
+
+  onPlayerStateChange(event){
+    console.log(event.data)
+    if (event.data === 1){
+      socket.emit('play-video')
+    }else if(event.data === 2){
+      socket.emit('pause-video')
+    }
   }
 
   startVideo(){
