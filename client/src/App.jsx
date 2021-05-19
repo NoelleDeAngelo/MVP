@@ -51,7 +51,10 @@ class App extends React.Component {
         socket.emit('join-room', roomId, userId)
     })
 
-    this.addYT()
+    window.YT.ready(()=>{
+      this.addYT()
+    })
+
   }
 
   addYT() {
