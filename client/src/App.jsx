@@ -4,10 +4,11 @@ const  socket = openSocket('http://localhost:3000');
 import Peer from 'peerjs'
 const myPeer = new Peer(undefined, {host: '/', port: '3001'})
 
-
 class App extends React.Component {
   constructor(props) {
     super(props);
+    this.startVideo= this.startVideo.bind(this)
+    this.addYT = this.addYT.bind(this)
     this.state = {
     }
   }
@@ -16,6 +17,7 @@ class App extends React.Component {
     var myVideo = document.createElement('video');
     myVideo.muted= true;
     myVideo.id = 'myvid'
+    myVideo.classList.add('callerVideo')
 
     navigator.mediaDevices.getUserMedia({
       video: true,
@@ -27,6 +29,7 @@ class App extends React.Component {
       myPeer.on('call', call => {
         call.answer(stream)
         var video = document.createElement('video');
+        video.classList.add('callerVideo')
         call.on('stream', callerVideoStream =>{
           this.addCallerVideo(video, callerVideoStream)
         })
@@ -48,8 +51,29 @@ class App extends React.Component {
         socket.emit('join-room', roomId, userId)
     })
 
-
+    this.addYT()
   }
+
+  addYT() {
+   this.player = new YT.Player('player', {
+      height: '390',
+      width: '640',
+      videoId: 'M7lc1UVf-VE',
+      playerVars: {
+        'playsinline': 1,
+        'orgin': location.origin
+      },
+      events: {
+        'onReady': this.startVideo,
+      }
+    });
+  }
+
+  startVideo(){
+    this.player.playVideo()
+  }
+
+
 
   addCallerVideo(video, stream) {
     video.srcObject = stream;
@@ -60,6 +84,7 @@ class App extends React.Component {
   connectToNewUser(userId, stream) {
     const call = myPeer.call(userId, stream);
     var video = document.createElement('video');
+    video.classList.add('callerVideo')
     call.on('stream', newUserVideoStream =>{
       this.addCallerVideo(video, newUserVideoStream)
     })
@@ -78,6 +103,9 @@ class App extends React.Component {
     return (
     <div>
       <h1>Watch With Me</h1>
+    <div id = 'player'>
+    </div>
+
       <div id='callGrid'>
       </div>
     </div>
