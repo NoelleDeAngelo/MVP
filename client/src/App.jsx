@@ -2,6 +2,7 @@ import React from 'react'
 import openSocket from 'socket.io-client';
 const  socket = openSocket('http://localhost:3000');
 import Peer from 'peerjs'
+import logo from './logo.png'
 const myPeer = new Peer(undefined, {host: '/', port: '3001'})
 
 class App extends React.Component {
@@ -92,8 +93,8 @@ class App extends React.Component {
 
   addYT() {
    this.player = new YT.Player('player', {
-      height: '390',
-      width: '640',
+      height: '585',
+      width: '960',
       videoId: this.videos[0],
       playerVars: {
         'orgin': location.origin
@@ -175,7 +176,7 @@ class App extends React.Component {
   render() {
     return (
     <div id= 'inner'>
-      <h1>Watch This</h1>
+      <h1 id='headder'><img id= 'logo' src= {logo}></img></h1>
     <div id = 'player'>
     </div>
       <div id='callGrid'></div>
