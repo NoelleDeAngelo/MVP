@@ -76,7 +76,7 @@ class App extends React.Component {
 
 
     socket.on('change-time', (time) =>{
-      if (time > 1) 
+      if (time > 1)
       this.player.seekTo(time, true)
     })
 
@@ -175,7 +175,7 @@ class App extends React.Component {
   render() {
     return (
     <div id= 'inner'>
-      <h1>Watch With Me</h1>
+      <h1>Watch This</h1>
     <div id = 'player'>
     </div>
       <div id='callGrid'></div>
