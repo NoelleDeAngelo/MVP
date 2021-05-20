@@ -11,7 +11,10 @@ class App extends React.Component {
     this.addYT = this.addYT.bind(this)
     this.onReady = this.onReady.bind(this)
     this.onPlayerStateChange = this.onPlayerStateChange.bind(this)
+    this.addToQueue= this.addToQueue.bind(this)
+    this.videos=['UiA4X60Qe1E', '4-aDJIvpozY']
     this.state = {
+
     }
   }
 
@@ -49,12 +52,16 @@ class App extends React.Component {
       }
     })
 
-    socket.on('ready', () =>{
-      console.log('ready')
-    })
+    // socket.on('ready', () =>{
+    //   console.log('ready')
+    // })
 
     socket.on('play-video', () =>{
       this.startVideo()
+    })
+
+    socket.on('pause-video', () =>{
+      this.pauseVideo()
     })
 
     myPeer.on('open', userId=>{
@@ -71,9 +78,8 @@ class App extends React.Component {
    this.player = new YT.Player('player', {
       height: '390',
       width: '640',
-      videoId: 'M7lc1UVf-VE',
+      videoId: this.videos[0],
       playerVars: {
-        'playsinline': 1,
         'orgin': location.origin
       },
       events: {
@@ -93,11 +99,18 @@ class App extends React.Component {
       socket.emit('play-video')
     }else if(event.data === 2){
       socket.emit('pause-video')
+    }else if(event.data === 0){
+      this.videos.shift()
+      this.player.loadVideoById(this.videos[0])
     }
   }
 
   startVideo(){
     this.player.playVideo()
+  }
+
+  pauseVideo(){
+    this.player.pauseVideo()
   }
 
 
@@ -126,15 +139,24 @@ class App extends React.Component {
     this.setState(obj);
   }
 
+  addToQueue(url){
+    console.log(url)
+    this.state.push
+
+  }
+
   render() {
     return (
-    <div>
+    <div id= 'inner'>
       <h1>Watch With Me</h1>
     <div id = 'player'>
     </div>
-
-      <div id='callGrid'>
+      <div id='callGrid'></div>
+      <div>
+      <input id= 'queueInput'type= 'text'></input>
+      <button onClick= {()=> {this.addToQueue(document.getElementById('queueInput').value); document.getElementById('queueInput').value = ''}}>Add to Queue</button>
       </div>
+
     </div>
     )
   }
