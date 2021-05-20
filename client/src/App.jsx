@@ -12,7 +12,7 @@ class App extends React.Component {
     this.onReady = this.onReady.bind(this)
     this.onPlayerStateChange = this.onPlayerStateChange.bind(this)
     this.addToQueue= this.addToQueue.bind(this)
-    this.videos=['UiA4X60Qe1E', '4-aDJIvpozY']
+    this.videos=['UiA4X60Qe1E']
     this.state = {
 
     }
@@ -62,6 +62,11 @@ class App extends React.Component {
 
     socket.on('pause-video', () =>{
       this.pauseVideo()
+    })
+
+
+    socket.on('queue-video', (id) =>{
+      this.videos.push(id)
     })
 
     myPeer.on('open', userId=>{
@@ -140,9 +145,9 @@ class App extends React.Component {
   }
 
   addToQueue(url){
-    console.log(url)
-    this.state.push
-
+    let id = url.slice(17)
+    this.videos.push(id)
+    socket.emit('queue-video', id)
   }
 
   render() {

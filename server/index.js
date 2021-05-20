@@ -32,6 +32,9 @@ io.on('connection', socket => {
     socket.on('pause-video', ()=>{
       socket.to(roomId).emit('pause-video')
     })
+    socket.on('queue-video', (id)=>{
+      socket.to(roomId).emit('queue-video', id)
+    })
 
   })
 })
