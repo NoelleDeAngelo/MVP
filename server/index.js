@@ -13,7 +13,7 @@ app.get('/', (req, res)=>{
 })
 
 app.get('/:room', (req, res)=>{
-  res.render('index.ejs', {roomId: req.params.room})
+  res.render('index.ejs', {roomId: req.params.room}) //roomQueue: queues[req.params.room]
 })
 
 io.on('connection', socket => {
@@ -34,6 +34,9 @@ io.on('connection', socket => {
     })
     socket.on('queue-video', (id)=>{
       socket.to(roomId).emit('queue-video', id)
+    })
+    socket.on('change-time', (time)=>{
+      socket.to(roomId).emit('change-time', time)
     })
 
   })
