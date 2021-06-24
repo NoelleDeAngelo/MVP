@@ -121,6 +121,7 @@ class App extends React.Component {
     }else if(event.data === 2){
       socket.emit('pause-video')
     }else if(event.data === 0){
+      socket.emit('video-ended', this.videos[0])
       this.videos.shift()
       this.player.loadVideoById(this.videos[0])
     }else if(event.data === 3){

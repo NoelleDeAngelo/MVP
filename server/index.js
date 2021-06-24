@@ -28,19 +28,21 @@ io.on('connection', socket => {
     socket.on('disconnect', ()=> {
       socket.to(roomId).emit('user-disconnect', userId)
     })
-    // socket.on('player-ready', ()=>{
-    //  socket.emit('ready')
-    // })
-    socket.on('play-video', ()=>{
+    socket.on('play-video', ()=> {
       socket.to(roomId).emit('play-video')
     })
-    socket.on('pause-video', ()=>{
+    socket.on('pause-video', ()=> {
       socket.to(roomId).emit('pause-video')
     })
-    socket.on('queue-video', (id)=>{
-      socket.to(roomId).emit('queue-video', id)
-      roomQueues[roomId] ? roomQueues[roomId].push(id) : roomQueues[roomId] = [id]
+    socket.on('queue-video', (videoId)=> {
+      socket.to(roomId).emit('queue-video', videoId)
+      roomQueues[roomId] ? roomQueues[roomId].push(videoId) : roomQueues[roomId] = [videoId]
     })
+    socket.on('video-ended', (videoId)=> {
+      if (roomQueues[roomId][0] === videoId) {
+        roomQueues[roomId].shift()
+      }
+     })
     socket.on('change-time', (time)=>{
       socket.to(roomId).emit('change-time', time)
     })
