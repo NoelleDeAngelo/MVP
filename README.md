@@ -4,7 +4,7 @@ WatchThis is a web application that allows users to get together in private room
 
 ## Project Status:
 
-This project is in development. Currently, users can create new rooms, join existing rooms, add YouTube videos to a queue to be played, and play/pause current videos. 
+This project is in development. Currently, users can create new rooms, join existing rooms, add YouTube videos to a queue to be played, and play/pause current videos.
 
 
 ## Installation and Setup
@@ -29,7 +29,7 @@ npm run react-dev
  ``` sh
 npm run server
 ```
-*Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+* Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ## Technologies Used
 

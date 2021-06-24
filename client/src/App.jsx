@@ -10,14 +10,12 @@ class App extends React.Component {
     super(props);
     this.startVideo= this.startVideo.bind(this)
     this.addYT = this.addYT.bind(this)
-    this.onReady = this.onReady.bind(this)
+    this.onPlayerReady = this.onPlayerReady.bind(this)
     this.onPlayerStateChange = this.onPlayerStateChange.bind(this)
     this.addToQueue= this.addToQueue.bind(this)
     this.videos=[]
     this.playerState= 0
-    this.state = {
-
-    }
+    this.state = {}
   }
 
   componentDidMount(){
@@ -48,6 +46,10 @@ class App extends React.Component {
     })
   })
 
+  socket.on('currentQueue', currentQueue => {
+    this.videos = currentQueue;
+  })
+
     socket.on('user-disconnect', userId =>{
       if (this.state[userId]){
         this.state[userId].close();
@@ -59,19 +61,19 @@ class App extends React.Component {
     // })
 
     socket.on('play-video', () =>{
-      this.startVideo()
+      this.startVideo();
     })
 
     socket.on('pause-video', () =>{
-      this.pauseVideo()
+      this.pauseVideo();
     })
 
 
     socket.on('queue-video', (id) =>{
       console.log('added by que', id)
       this.videos.push(id)
-      if (this.playerState ===0){
-        this.player.loadVideoById(this.videos[0])
+      if (this.playerState === 0){
+        this.player.loadVideoById(id)
       }
     })
 
@@ -82,7 +84,7 @@ class App extends React.Component {
     })
 
     myPeer.on('open', userId=>{
-        socket.emit('join-room', roomId, userId)
+        socket.emit('join-room', roomId, userId, socket.id)
     })
 
     window.YT.ready(()=>{
@@ -100,29 +102,27 @@ class App extends React.Component {
         'orgin': location.origin
       },
       events: {
-        'onReady': this.onReady,
+        'onReady': this.onPlayerReady,
         'onStateChange': this.onPlayerStateChange
       }
     });
   }
 
-  onReady(){
-    socket.emit('player-ready')
+  onPlayerReady(){
+    this.player.loadVideoById(this.videos[0])
   }
 
   onPlayerStateChange(event){
     console.log(event.data)
+    this.playerState = event.data
     if (event.data === 1){
-      this.playerState=1
       socket.emit('play-video')
+      console.log('emit play')
     }else if(event.data === 2){
-      this.playerState=2
       socket.emit('pause-video')
     }else if(event.data === 0){
       this.videos.shift()
-      console.log(this.videos)
       this.player.loadVideoById(this.videos[0])
-      this.playerState=0
     }else if(event.data === 3){
       var time = this.player.getCurrentTime()
       socket.emit('change-time', time + 0.3)
@@ -162,13 +162,14 @@ class App extends React.Component {
     var obj = {}
     obj[userId]= call
     this.setState(obj);
+    // emait a add playing video to user ID that has current video and time
   }
 
   addToQueue(url){
     let id = url.slice(17);
     this.videos.push(id)
     socket.emit('queue-video', id)
-    if (this.playerState ===0){
+    if (this.playerState === 0){
         this.player.loadVideoById(this.videos[0])
     }
   }

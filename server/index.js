@@ -16,10 +16,15 @@ app.get('/:room', (req, res)=>{
   res.render('index.ejs', {roomId: req.params.room}) //roomQueue: queues[req.params.room]
 })
 
+var roomQueues = {};
+
 io.on('connection', socket => {
-  socket.on('join-room', (roomId, userId) => {
+  socket.on('join-room', (roomId, userId, socketId) => {
     socket.join(roomId)
     socket.to(roomId).emit('user-connected', userId)
+    if(roomQueues[roomId]) {
+      io.to(socketId).emit('currentQueue', roomQueues[roomId])
+    }
     socket.on('disconnect', ()=> {
       socket.to(roomId).emit('user-disconnect', userId)
     })
@@ -34,6 +39,7 @@ io.on('connection', socket => {
     })
     socket.on('queue-video', (id)=>{
       socket.to(roomId).emit('queue-video', id)
+      roomQueues[roomId] ? roomQueues[roomId].push(id) : roomQueues[roomId] = [id]
     })
     socket.on('change-time', (time)=>{
       socket.to(roomId).emit('change-time', time)
