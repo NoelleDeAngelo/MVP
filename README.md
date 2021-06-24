@@ -1,6 +1,6 @@
 # WatchThis
 
-WatchThis is a web application that allows users to get together in private rooms in order to video chat while watching videos.
+WatchThis is a web application that allows users to get together in private rooms to video chat while watching YouTube videos.
 
 ## Project Status:
 
