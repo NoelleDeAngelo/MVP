@@ -17,7 +17,6 @@ h1{
   width: 110%;
   background-color: #F9F1f1 ;
   grid-column: 1 / span 2;
-  margin: 50px;
   margin-left:0;
   padding-top: 15px;
   padding-bottom: 0px;
@@ -75,4 +74,8 @@ button {
 
 button:hover {
   opacity: 0.8;
+}
+
+#queue{
+  
 }

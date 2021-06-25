@@ -1,4 +1,5 @@
 import React from 'react'
+import Queue from './Queue.jsx'
 import openSocket from 'socket.io-client';
 const  socket = openSocket('http://localhost:3000');
 import Peer from 'peerjs'
@@ -15,8 +16,9 @@ class App extends React.Component {
     this.addToQueue= this.addToQueue.bind(this)
     this.videos=[]
     this.playerState= 0
-    this.late = false
-    this.state = {}
+    this.state = {
+      videos: [],
+    }
   }
 
   componentDidMount(){
@@ -48,8 +50,7 @@ class App extends React.Component {
   })
 
   socket.on('currentQueue', currentQueue => {
-    this.late = true;
-    this.videos = currentQueue;
+    this.setState({videos:currentQueue});
   })
 
     socket.on('user-disconnect', userId =>{
@@ -68,8 +69,9 @@ class App extends React.Component {
 
 
     socket.on('queue-video', (id) =>{
-      console.log('added by que', id)
-      this.videos.push(id)
+      //console.log('added by que', id)
+      let videos = [...this.state.videos]
+      videos.push(id)
       if (this.playerState === 0){
         this.player.loadVideoById(id)
       }
@@ -98,7 +100,7 @@ class App extends React.Component {
    this.player = new YT.Player('player', {
       height: '585',
       width: '960',
-      videoId: this.videos[0],
+      videoId: this.state.videos[0],
       playerVars: {
         'orgin': location.origin
       },
@@ -110,24 +112,25 @@ class App extends React.Component {
   }
 
   onPlayerReady(){
-    this.player.loadVideoById(this.videos[0])
+    this.player.loadVideoById(this.state.videos[0])
     if (this.late){
       socket.emit('get-time')
     }
   }
 
   onPlayerStateChange(event){
-    console.log(event.data)
+    //console.log(event.data)
     this.playerState = event.data
     if (event.data === 1){
       socket.emit('play-video')
-      console.log('emit play')
     }else if(event.data === 2){
       socket.emit('pause-video')
     }else if(event.data === 0){
       socket.emit('video-ended', this.videos[0])
-      this.videos.shift()
-      this.player.loadVideoById(this.videos[0])
+      let videos= [...this.state.videos]
+      videos.shift()
+      this.player.loadVideoById(videos[0])
+      this.setState({videos: videos})
     }else if(event.data === 3){
       this.changeVideoToTime(this.player.getCurrentTime())
     }
@@ -172,10 +175,12 @@ class App extends React.Component {
 
   addToQueue(url){
     let id = url.slice(17);
-    this.videos.push(id)
-    socket.emit('queue-video', id)
+    let videos = [...this.state.videos];
+    videos.push(id);
+    this.setState({videos: videos});
+    socket.emit('queue-video', id);
     if (this.playerState === 0){
-        this.player.loadVideoById(this.videos[0])
+        this.player.loadVideoById(videos[0])
     }
   }
 
@@ -190,7 +195,7 @@ class App extends React.Component {
       <input id= 'queueInput'type= 'text'></input>
       <button onClick= {()=> {this.addToQueue(document.getElementById('queueInput').value); document.getElementById('queueInput').value = ''}}>Add to Queue</button>
       </div>
-
+      <Queue queue= {this.state.videos}/>
     </div>
     )
   }
