@@ -15,6 +15,7 @@ class App extends React.Component {
     this.addToQueue= this.addToQueue.bind(this)
     this.videos=[]
     this.playerState= 0
+    this.late = false
     this.state = {}
   }
 
@@ -42,11 +43,12 @@ class App extends React.Component {
 
 
     socket.on('user-connected', userId => {
-      this.connectToNewUser(userId, stream)
+      this.connectToNewUser(userId, stream);
     })
   })
 
   socket.on('currentQueue', currentQueue => {
+    this.late = true;
     this.videos = currentQueue;
   })
 
@@ -55,10 +57,6 @@ class App extends React.Component {
         this.state[userId].close();
       }
     })
-
-    // socket.on('ready', () =>{
-    //   console.log('ready')
-    // })
 
     socket.on('play-video', () =>{
       this.startVideo();
@@ -77,10 +75,13 @@ class App extends React.Component {
       }
     })
 
-
-    socket.on('change-time', (time) =>{
+    socket.on('change-time', time =>{
       if (time > 1)
       this.player.seekTo(time, true)
+    })
+
+    socket.on('request-time', () =>{
+      socket.emit('video-time', this.player.getCurrentTime())
     })
 
     myPeer.on('open', userId=>{
@@ -110,6 +111,9 @@ class App extends React.Component {
 
   onPlayerReady(){
     this.player.loadVideoById(this.videos[0])
+    if (this.late){
+      socket.emit('get-time')
+    }
   }
 
   onPlayerStateChange(event){
@@ -125,8 +129,7 @@ class App extends React.Component {
       this.videos.shift()
       this.player.loadVideoById(this.videos[0])
     }else if(event.data === 3){
-      var time = this.player.getCurrentTime()
-      socket.emit('change-time', time + 0.3)
+      this.changeVideoToTime(this.player.getCurrentTime())
     }
 
   }
@@ -139,7 +142,9 @@ class App extends React.Component {
     this.player.pauseVideo()
   }
 
-
+  changeVideoToTime(time){
+    socket.emit('change-time', time + 0.3)
+  }
 
   addCallerVideo(video, stream) {
     video.srcObject = stream;
@@ -163,7 +168,6 @@ class App extends React.Component {
     var obj = {}
     obj[userId]= call
     this.setState(obj);
-    // emait a add playing video to user ID that has current video and time
   }
 
   addToQueue(url){

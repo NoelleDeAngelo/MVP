@@ -46,6 +46,12 @@ io.on('connection', socket => {
     socket.on('change-time', (time)=>{
       socket.to(roomId).emit('change-time', time)
     })
+    socket.on('get-time', ()=>{
+      socket.to(roomId).emit('request-time')
+    })
+    socket.on('video-time', (time)=>{
+      io.to(socketId).emit('change-time', time)
+    })
 
   })
 })
