@@ -16,27 +16,41 @@ app.get('/:room', (req, res)=>{
   res.render('index.ejs', {roomId: req.params.room}) //roomQueue: queues[req.params.room]
 })
 
+var roomQueues = {};
+
 io.on('connection', socket => {
-  socket.on('join-room', (roomId, userId) => {
+  socket.on('join-room', (roomId, userId, socketId) => {
     socket.join(roomId)
     socket.to(roomId).emit('user-connected', userId)
+    if(roomQueues[roomId]) {
+      io.to(socketId).emit('currentQueue', roomQueues[roomId])
+    }
     socket.on('disconnect', ()=> {
       socket.to(roomId).emit('user-disconnect', userId)
     })
-    // socket.on('player-ready', ()=>{
-    //  socket.emit('ready')
-    // })
-    socket.on('play-video', ()=>{
+    socket.on('play-video', ()=> {
       socket.to(roomId).emit('play-video')
     })
-    socket.on('pause-video', ()=>{
+    socket.on('pause-video', ()=> {
       socket.to(roomId).emit('pause-video')
     })
-    socket.on('queue-video', (id)=>{
-      socket.to(roomId).emit('queue-video', id)
+    socket.on('queue-video', (videoId)=> {
+      socket.to(roomId).emit('queue-video', videoId)
+      roomQueues[roomId] ? roomQueues[roomId].push(videoId) : roomQueues[roomId] = [videoId]
     })
+    socket.on('video-ended', (videoId)=> {
+      if (roomQueues[roomId][0] === videoId) {
+        roomQueues[roomId].shift()
+      }
+     })
     socket.on('change-time', (time)=>{
       socket.to(roomId).emit('change-time', time)
+    })
+    socket.on('get-time', ()=>{
+      socket.to(roomId).emit('request-time')
+    })
+    socket.on('video-time', (time)=>{
+      io.to(socketId).emit('change-time', time)
     })
 
   })
