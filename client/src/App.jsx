@@ -23,13 +23,13 @@ class App extends React.Component {
 
   componentDidMount(){
     var myVideo = document.createElement('video');
-    myVideo.muted= true;
+    myVideo.muted= false;
     myVideo.id = 'myvid'
     myVideo.classList.add('callerVideo')
 
     navigator.mediaDevices.getUserMedia({
       video: true,
-      audio: false,
+      audio: true,
     })
     .then(stream =>{
       this.addCallerVideo(myVideo, stream)
