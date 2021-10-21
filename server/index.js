@@ -1,9 +1,11 @@
 const express = require ('express');
 const app = express();
 const server = require('http').Server(app);
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {cors:{origin:'*'}});
 const {v4: uuidV4} = require('uuid');
+var cors = require('cors')
 
+app.use(cors())
 app.use(express.static(__dirname + '/../client/dist'))
 app.set('view engine', 'ejs');
 app.set('views', __dirname+ '/../client/dist')

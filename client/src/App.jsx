@@ -1,10 +1,10 @@
 import React from 'react'
 import Queue from './Queue.jsx'
 import openSocket from 'socket.io-client';
-const  socket = openSocket('http://localhost:3000');
+const  socket = openSocket('watchthiswithme.com', {withCredentials:true});
 import Peer from 'peerjs'
 import logo from './logo.png'
-const myPeer = new Peer(undefined, {host: '/', port: '3001'})
+const myPeer = new Peer();
 
 class App extends React.Component {
   constructor(props) {
@@ -23,7 +23,7 @@ class App extends React.Component {
 
   componentDidMount(){
     var myVideo = document.createElement('video');
-    myVideo.muted= false;
+    myVideo.muted= true;
     myVideo.id = 'myvid'
     myVideo.classList.add('callerVideo')
 
