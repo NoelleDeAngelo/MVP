@@ -1,13 +1,22 @@
 # WatchThis
 
-WatchThis is a web application that allows users to get together in private rooms to video chat while watching YouTube videos.
+WatchThis is a web application that allows users to get together in private rooms to video chat while watching YouTube videos that are synced for all users in the room.
 
 ## Project Status:
 
-This project is in development. Currently, users can create new rooms, join existing rooms, add YouTube videos to a queue to be played, and play/pause current videos.
+This project is in development. Currently, users can create new rooms, join existing rooms, add YouTube videos to the queue to be played, and play/pause current videos.
 
 
-## Installation and Setup
+Find the deployed application at [WatchThisWithMe.com](https://watchthiswithme.com). 
+
+### Use
+Visiting the main page will automatically create and redirect you to a new room. To invite people to your private room, give them your room’s url. 
+
+YouTube videos can be added to the WatchThis queue by adding the link provided by the Youtube “share” button. 
+
+
+
+## Installation and Setup Locally
 
 * Install PeerJS globaly
 ``` sh
@@ -21,11 +30,11 @@ npm install
 ``` sh
 peerjs --port 3001
 ```
-* Start webpack
+* Run webpack
  ``` sh
-npm run react-dev
+npm run prod-react
 ```
-* Start express server
+* Start server
  ``` sh
 npm run server
 ```
