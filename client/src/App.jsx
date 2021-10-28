@@ -23,7 +23,7 @@ class App extends React.Component {
 
   componentDidMount(){
     var myVideo = document.createElement('video');
-    myVideo.muted= false;
+    myVideo.muted= true;
     myVideo.id = 'myvid'
     myVideo.classList.add('callerVideo')
 
