@@ -7,8 +7,6 @@ WatchThis is a web application that allows users to get together in private room
 This project is in development. Currently, users can create new rooms, join existing rooms, add YouTube videos to the queue to be played, and play/pause current videos.
 
 
-Find the deployed application at [WatchThisWithMe.com](https://watchthiswithme.com). 
-
 ### Use
 Visiting the main page will automatically create and redirect you to a new room. To invite people to your private room, give them your room’s url. 
 
